@@ -4,6 +4,9 @@ import openai
 # Page config
 st.set_page_config(page_title="Translate My Thought", layout="centered")
 
+# Load API key
+openai.api_key = st.secrets["openai"]["openai_api_key"]
+
 st.title("🕊️ Translate My Thought")
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
@@ -25,10 +28,8 @@ if st.button("🔁 Translate"):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
         ]
-        st.write("🔑 API Key loaded:", openai.api_key[:5] + "...")
         
         try:
-            openai.api_key = st.secrets["openai_api_key"]
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=messages,
