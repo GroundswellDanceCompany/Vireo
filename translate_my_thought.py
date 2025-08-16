@@ -1,11 +1,12 @@
 import streamlit as st
-import openai
+from openai import OpenAI
+    
 
 # Page config
 st.set_page_config(page_title="Translate My Thought", layout="centered")
 
 # Load API key
-openai.api_key = st.secrets["openai"]["openai_api_key"]
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
 # Sidebar: Model selector
 st.sidebar.title("⚙️ Settings")
