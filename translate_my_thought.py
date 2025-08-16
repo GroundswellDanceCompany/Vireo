@@ -7,11 +7,24 @@ st.set_page_config(page_title="Translate My Thought", layout="centered")
 # Load API key
 openai.api_key = st.secrets["openai"]["openai_api_key"]
 
+# Sidebar: Model selector
+st.sidebar.title("⚙️ Settings")
+model_choice = st.sidebar.radio(
+    "Choose a model:",
+    options=["gpt-3.5-turbo", "gpt-4"],
+    index=0  # Default to GPT-3.5
+)
+
+# App Title
 st.title("🕊️ Translate My Thought")
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
 # User input
-user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
+user_input = st.text_area(
+    "Your thought:",
+    placeholder="e.g. 'I feel stuck and overwhelmed.'",
+    height=100
+)
 
 # Translate button
 if st.button("🔁 Translate"):
@@ -28,10 +41,10 @@ if st.button("🔁 Translate"):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
         ]
-        
+
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-4",
+                model=model_choice,
                 messages=messages,
                 temperature=0.8,
                 max_tokens=60
