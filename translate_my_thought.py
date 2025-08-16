@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+import openai
 
 # Page config
 st.set_page_config(page_title="Translate My Thought", layout="centered")
@@ -27,10 +27,8 @@ if st.button("🔁 Translate"):
         ]
 
         try:
-            client = OpenAI(api_key=st.secrets["openai"]["api_key"])
-
-            response = client.chat.completions.create(
-            
+            openai.api_key = st.secrets["openai_api_key"]
+            response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=messages,
                 temperature=0.8,
