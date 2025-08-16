@@ -25,7 +25,8 @@ if st.button("🔁 Translate"):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
         ]
-
+        st.write("🔑 API Key loaded:", openai.api_key[:5] + "...")
+        
         try:
             openai.api_key = st.secrets["openai_api_key"]
             response = openai.ChatCompletion.create(
