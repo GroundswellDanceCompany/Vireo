@@ -27,8 +27,10 @@ if st.button("🔁 Translate"):
         ]
 
         try:
-            openai.api_key = st.secrets["openai_api_key"]
-            response = openai.ChatCompletion.create(
+            client = OpenAI(api_key=st.secrets["openai"]["api_key"])
+
+            response = client.chat.completions.create(
+            
                 model="gpt-4",
                 messages=messages,
                 temperature=0.8,
