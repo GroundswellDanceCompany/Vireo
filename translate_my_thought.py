@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
 # Page config
 st.set_page_config(page_title="Translate My Thought", layout="centered")
