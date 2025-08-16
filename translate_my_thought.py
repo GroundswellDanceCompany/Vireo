@@ -44,7 +44,7 @@ model_choice = st.sidebar.radio(
 )
 
 # App Title
-st.title("🕊Translate My Thought")
+st.title("Translate My Thought")
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
 # User input
@@ -55,7 +55,7 @@ user_input = st.text_area(
 )
 
 # Translate button
-if st.button("🔁 Translate"):
+if st.button("Translate"):
     if user_input.strip() == "":
         st.warning("Please enter a thought to translate.")
     else:
