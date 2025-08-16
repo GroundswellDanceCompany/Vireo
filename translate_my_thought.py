@@ -3,7 +3,7 @@ from openai import OpenAI
 from PIL import Image
 
 # Load and display logo
-logo = Image.open("assets/vireo_logo.png")  # Adjust path if needed
+logo = Image.open("assets/VIREO.png")  # Adjust path if needed
 st.image(logo, width=150)  # Adjust width as desired
     
 
