@@ -10,6 +10,28 @@ st.image(logo, width=150)  # Adjust width as desired
 # Page config
 st.set_page_config(page_title="Translate My Thought", layout="centered")
 
+# Inject custom green theme styling
+st.markdown("""
+    <style>
+    html, body, [class*="css"]  {
+        color: #29a329 !important;  /* Vireo green */
+    }
+    .stButton>button {
+        background-color: #29a329 !important;
+        color: white !important;
+        border: none;
+        padding: 0.5em 1em;
+        border-radius: 5px;
+    }
+    .stTextArea textarea {
+        border: 1px solid #29a329 !important;
+    }
+    .stMarkdown, .stTextInput>div>input {
+        color: #29a329 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
