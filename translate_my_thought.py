@@ -65,7 +65,7 @@ def show_logo(width_px: int = 100):
         st.warning("Logo not found!")
 
 # call this where you want the logo:
-show_logo(300)
+show_logo(100)
 
 # -------------------------
 # Sidebar: Mode + Paywall
