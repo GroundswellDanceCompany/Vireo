@@ -42,7 +42,7 @@ st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought<
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
 # Poetic style selector on main page
-selected_style = st.selectbox("ð­ Choose a poetic style:", list(poetic_modes.keys()))
+selected_style = st.selectbox("Choose a poetic style:", list(poetic_modes.keys()))
 
 # User input
 user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
@@ -65,11 +65,11 @@ if st.button("Translate"):
                 max_tokens=60
             )
             poetic_response = response.choices[0].message.content.strip()
-            st.markdown("### ð¸ Your Line:")
+            st.markdown("Your Line:")
             st.success(poetic_response)
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
 # Footer
 st.markdown("---")
-st.markdown("<div style='color:#29a329;'>Made with ðï¸ by VIREO</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#29a329;'>Made with 🌿 by VIREO</div>", unsafe_allow_html=True)
