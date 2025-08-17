@@ -7,7 +7,7 @@ from streamlit.components.v1 import html
 # -------------------------
 # Config
 # -------------------------
-LOGO_PATH = "assets/VIREO.png"
+LOGO_PATH = "assets/VIREO.svg"
 VIREO_GREEN = "#29a329"
 PAGE_TITLE = "VIREO — Translate My Thought"
 
@@ -50,7 +50,7 @@ st.markdown(f"""
 # -------------------------
 # Logo + Title
 # -------------------------
-st.image(Image.open(LOGO_PATH), width=144)
+st.image("assets/VIREO.svg", width=300).
 st.markdown(f"<h2 style='color:{VIREO_GREEN}; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 
 # -------------------------
