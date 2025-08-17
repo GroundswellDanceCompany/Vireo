@@ -1,3 +1,4 @@
+
 import streamlit as st
 from openai import OpenAI
 from PIL import Image
@@ -41,7 +42,7 @@ st.sidebar.title("⚙️ Settings")
 model_choice = st.sidebar.radio("Choose a model:", options=["gpt-3.5-turbo", "gpt-4"], index=0)
 selected_style = st.sidebar.selectbox("Poetic Style", list(poetic_modes.keys()))
 
-# Main Title
+# App Title
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
@@ -70,6 +71,17 @@ if st.button("Translate"):
             st.success(poetic_response)
         except Exception as e:
             st.error(f"Something went wrong: {e}")
+
+# Display all poetic styles on screen
+st.markdown("---")
+st.markdown("### ✨ Poetic Styles")
+
+for style_name, prompt in poetic_modes.items():
+    description = prompt.split('.')[0]
+    if style_name == selected_style:
+        st.markdown(f"**🟢 {style_name}** — _{description}..._")
+    else:
+        st.markdown(f"**{style_name}** — _{description}..._")
 
 # Footer
 st.markdown("---")
