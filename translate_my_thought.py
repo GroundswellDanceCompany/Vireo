@@ -79,7 +79,7 @@ with col1:
         st.rerun()
 with col2:
     selected_style = st.selectbox(
-        "🎭 Choose a poetic style:",
+        "Choose a poetic style:",
         style_names,
         key="style_select"
     )
@@ -295,12 +295,12 @@ if poetic_response:
     # Render buttons
     st.markdown(
         f"""
-        <a class="share-btn" href="{twitter}" target="_blank">🐦 X/Twitter</a>
-        <a class="share-btn" href="{whatsapp}" target="_blank">💬 WhatsApp</a>
-        <a class="share-btn" href="{telegram}" target="_blank">📨 Telegram</a>
-        <a class="share-btn" href="{mailto}" target="_blank">✉️ Email</a>
-        <a class="share-btn" href="{fb}" target="_blank">📘 Facebook</a>
-        <a class="share-btn" href="{threads}" target="_blank">🧵 Threads</a>
+        <a class="share-btn" href="{twitter}" target="_blank"> X/Twitter</a>
+        <a class="share-btn" href="{whatsapp}" target="_blank"> WhatsApp</a>
+        <a class="share-btn" href="{telegram}" target="_blank"> Telegram</a>
+        <a class="share-btn" href="{mailto}" target="_blank">✉ Email</a>
+        <a class="share-btn" href="{fb}" target="_blank"> Facebook</a>
+        <a class="share-btn" href="{threads}" target="_blank"> Threads</a>
         <a class="share-btn" href="{instagram}" target="_blank" title="Copy the line first, then paste into Instagram">📸 Instagram</a>
         """,
         unsafe_allow_html=True
