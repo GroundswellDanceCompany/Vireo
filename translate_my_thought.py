@@ -4,27 +4,24 @@ from openai import OpenAI
 import json, random, urllib.parse, io
 from streamlit.components.v1 import html
 
-# -----------------------------
+# ---------------------------------
 # Config
-# -----------------------------
+# ---------------------------------
 LOGO_PATH = "assets/VIREO.png"
-FONT_PATH = None  # e.g. "assets/Inter-Regular.ttf" (optional)
-
-# -----------------------------
-# Load poetic modes from JSON
-# -----------------------------
-with open("poetic_modes.json", "r") as f:
-    poetic_modes = json.load(f)
-
-style_names = list(poetic_modes.keys())
-
-# -----------------------------
-# Page config & Theme (VIREO green)
-# -----------------------------
-st.set_page_config(page_title="Translate My Thought", layout="centered")
-
+FONT_PATH = None  # e.g. "assets/Inter-Regular.ttf" (optional custom font)
 VIREO_GREEN = "#29a329"
 
+# ---------------------------------
+# Load poetic modes from JSON
+# ---------------------------------
+with open("poetic_modes.json", "r") as f:
+    poetic_modes = json.load(f)
+style_names = list(poetic_modes.keys())
+
+# ---------------------------------
+# Page config & Theme (VIREO green)
+# ---------------------------------
+st.set_page_config(page_title="Translate My Thought", layout="centered")
 st.markdown(f"""
     <style>
     html, body, [class*="css"]  {{ color: {VIREO_GREEN} !important; }}
@@ -41,20 +38,20 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
+# ---------------------------------
 # Logo
-# -----------------------------
+# ---------------------------------
 logo = Image.open(LOGO_PATH)
 st.image(logo, width=200)
 
-# -----------------------------
+# ---------------------------------
 # Sidebar settings
-# -----------------------------
+# ---------------------------------
 st.sidebar.title("⚙️ Settings")
 demo_mode = st.sidebar.checkbox("🧪 Demo mode (no API)", value=True)
 model_choice = st.sidebar.radio("Model (when demo is off):", ["gpt-3.5-turbo", "gpt-4"], index=0)
 
-# Try to create client only if not in demo mode
+# Create OpenAI client when not in demo mode
 client = None
 if not demo_mode:
     try:
@@ -63,15 +60,15 @@ if not demo_mode:
         st.sidebar.error("No valid OpenAI API key found in secrets. Using Demo mode instead.")
         demo_mode = True
 
-# -----------------------------
+# ---------------------------------
 # Title & intro
-# -----------------------------
+# ---------------------------------
 st.markdown(f"<h2 style='color:{VIREO_GREEN}; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
-# -----------------------------
-# Surprise Me + dropdown
-# -----------------------------
+# ---------------------------------
+# Style selection row: Surprise Me + dropdown
+# ---------------------------------
 if "style_select" not in st.session_state:
     st.session_state.style_select = style_names[0]
 
@@ -80,7 +77,6 @@ with col1:
     if st.button("🎲 Surprise Me"):
         st.session_state.style_select = random.choice(style_names)
         st.rerun()
-
 with col2:
     selected_style = st.selectbox(
         "🎭 Choose a poetic style:",
@@ -92,14 +88,14 @@ resolved_prompt = poetic_modes[selected_style]
 resolved_description = resolved_prompt.split(".")[0]
 st.markdown(f"<p style='color:{VIREO_GREEN}; font-style:italic;'>“{resolved_description}.”</p>", unsafe_allow_html=True)
 
-# -----------------------------
+# ---------------------------------
 # Input
-# -----------------------------
+# ---------------------------------
 user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
 
-# -----------------------------
+# ---------------------------------
 # Demo generator (no-API)
-# -----------------------------
+# ---------------------------------
 def demo_translate(thought: str, style: str) -> str:
     t = (thought or "this moment").strip()
     samples = {
@@ -128,9 +124,9 @@ def demo_translate(thought: str, style: str) -> str:
     }
     return samples.get(style, f"{t} turns toward light.")
 
-# -----------------------------
-# Copy-to-clipboard helper (no deps)
-# -----------------------------
+# ---------------------------------
+# Copy-to-clipboard (no deps)
+# ---------------------------------
 def copy_button(text: str, label: str = "📋 Copy"):
     safe = text.replace("\\", "\\\\").replace("`", "\\`").replace('"', '\\"').replace("\n", "\\n")
     html(f"""
@@ -140,16 +136,15 @@ def copy_button(text: str, label: str = "📋 Copy"):
         </button>
     """, height=45)
 
-# -----------------------------
-# Image card generator
-# -----------------------------
-def create_share_card(quote: str, style_name: str, logo_img: Image.Image) -> bytes:
-    # Canvas: 1200x630 (social card)
+# ---------------------------------
+# Image card generator (returns PIL Image)
+# ---------------------------------
+def create_share_card(quote: str, style_name: str, logo_img: Image.Image) -> Image.Image:
     W, H = 1200, 630
     bg = Image.new("RGB", (W, H), color=(0, 0, 0))
     draw = ImageDraw.Draw(bg)
 
-    # Load fonts
+    # Fonts
     try:
         title_font = ImageFont.truetype(FONT_PATH, 44) if FONT_PATH else ImageFont.load_default()
         quote_font = ImageFont.truetype(FONT_PATH, 48) if FONT_PATH else ImageFont.load_default()
@@ -159,64 +154,67 @@ def create_share_card(quote: str, style_name: str, logo_img: Image.Image) -> byt
         quote_font = ImageFont.load_default()
         foot_font  = ImageFont.load_default()
 
-    # Colors
     GREEN = (41, 163, 41)
     WHITE = (255, 255, 255)
 
-    # Optional: logo in top-left
+    # Logo (top-left)
     try:
-        lg = logo_img.copy()
+        lg = logo_img.convert("RGBA")
         lg_w = 180
         ratio = lg_w / lg.width
         lg = lg.resize((lg_w, int(lg.height * ratio)))
-        bg.paste(lg, (60, 40), lg if lg.mode == "RGBA" else None)
+        bg.paste(lg, (60, 40), lg)  # keep transparency if present
     except Exception:
         pass
 
-    # Title (style)
-    title_text = f"{style_name}"
-    draw.text((60, 250), title_text, font=title_font, fill=GREEN)
+    # Helper: text width (compatible across Pillow versions)
+    def text_width(txt, font):
+        try:
+            return draw.textlength(txt, font=font)
+        except Exception:
+            bbox = draw.textbbox((0, 0), txt, font=font)
+            return bbox[2] - bbox[0]
 
-    # Wrap the quote manually to fit
-    def wrap_text(text, font, max_width):
+    # Wrap text
+    def wrap_text(text, font, max_w):
         words = text.split(" ")
         lines, line = [], ""
         for w in words:
             test = (line + " " + w).strip()
-            if draw.textlength(test, font=font) <= max_width:
+            if text_width(test, font) <= max_w:
                 line = test
             else:
-                lines.append(line)
+                if line:
+                    lines.append(line)
                 line = w
         if line:
             lines.append(line)
         return lines
 
-    max_text_width = W - 120  # margins
+    # Title (style)
+    draw.text((60, 250), style_name, font=title_font, fill=GREEN)
+
+    # Quote
+    max_w = W - 120
     lines = []
     for para in quote.split("\n"):
-        lines.extend(wrap_text(para, quote_font, max_text_width))
+        lines.extend(wrap_text(para, quote_font, max_w))
 
-    # Draw quote
     y = 310
     for li in lines:
         draw.text((60, y), li, font=quote_font, fill=WHITE)
-        y += 60  # line height
+        y += 60
 
-    # Footer brand
+    # Footer
     footer = "Made with 🕊️ VIREO"
-    fw = draw.textlength(footer, font=foot_font)
+    fw = text_width(footer, foot_font)
     draw.text((W - fw - 60, H - 60), footer, font=foot_font, fill=GREEN)
 
-    # Export to PNG bytes
-    buf = io.BytesIO()
-    bg.save(buf, format="PNG")
-    buf.seek(0)
-    return buf.getvalue()
+    return bg  # PIL Image
 
-# -----------------------------
+# ---------------------------------
 # Translate
-# -----------------------------
+# ---------------------------------
 poetic_response = None
 
 if st.button("Translate"):
@@ -248,9 +246,9 @@ if st.button("Translate"):
                 poetic_response = demo_translate(user_input, selected_style)
                 st.success(poetic_response)
 
-# -----------------------------
+# ---------------------------------
 # Share & Copy (render only if we have a line)
-# -----------------------------
+# ---------------------------------
 if poetic_response:
     st.markdown("#### Share")
     copy_button(poetic_response, "📋 Copy line")
@@ -271,10 +269,15 @@ if poetic_response:
         unsafe_allow_html=True
     )
 
-    # --- Create Image Card ---
+    # Create Image Card
     if st.button("🖼️ Create Image Card"):
-        png_bytes = create_share_card(poetic_response, selected_style, logo)
-        st.image(png_bytes, caption="Preview", use_column_width=True)
+        card_img = create_share_card(poetic_response, selected_style, logo)
+        # Preview
+        st.image(card_img, caption="Preview", use_column_width=True)
+        # Download bytes
+        buf = io.BytesIO()
+        card_img.save(buf, format="PNG")
+        png_bytes = buf.getvalue()
         st.download_button(
             "⬇️ Download PNG",
             data=png_bytes,
@@ -282,8 +285,8 @@ if poetic_response:
             mime="image/png"
         )
 
-# -----------------------------
+# ---------------------------------
 # Footer
-# -----------------------------
+# ---------------------------------
 st.markdown("---")
 st.markdown(f"<div style='color:{VIREO_GREEN};'>Made with 🕊️ by VIREO</div>", unsafe_allow_html=True)
