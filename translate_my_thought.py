@@ -223,7 +223,7 @@ if st.button("Translate"):
     else:
         if demo_mode or client is None:
             poetic_response = demo_translate(user_input, selected_style)
-            st.markdown("### 🌸 Your Line (Demo):")
+            st.markdown("### 🟢 Your Line (Demo):")
             st.success(poetic_response)
         else:
             messages = [
