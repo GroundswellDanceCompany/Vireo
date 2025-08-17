@@ -41,7 +41,7 @@ model_choice = st.sidebar.radio(
 )
 
 # App Title & Description
-st.title("Translate My Thought")
+#st.title("Translate My Thought")
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
