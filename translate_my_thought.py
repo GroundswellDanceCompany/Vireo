@@ -53,7 +53,7 @@ st.markdown(f"""
 # --- Logo loader (file-based) ---
 from pathlib import Path
 
-def show_logo(width_px: int = 300):
+def show_logo(width_px: int = 100):
     svg_path = Path("assets/VIREO.svg")
     if svg_path.exists():
         svg = svg_path.read_text(encoding="utf-8")
