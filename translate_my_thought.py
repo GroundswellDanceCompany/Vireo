@@ -27,7 +27,7 @@ st.markdown("""
 
 # Load and display logo
 logo = Image.open("assets/VIREO.png")
-st.image(logo, width=250)
+st.image(logo, width=200)
 
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
