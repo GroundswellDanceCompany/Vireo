@@ -37,14 +37,12 @@ st.image(logo, width=200)
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
-# Sidebar: Settings
-st.sidebar.title("⚙️ Settings")
-model_choice = st.sidebar.radio("Choose a model:", options=["gpt-3.5-turbo", "gpt-4"], index=0)
-selected_style = st.sidebar.selectbox("Poetic Style", list(poetic_modes.keys()))
-
 # App Title
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
+
+# Poetic style selector on main page
+selected_style = st.selectbox("ð­ Choose a poetic style:", list(poetic_modes.keys()))
 
 # User input
 user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
@@ -61,28 +59,17 @@ if st.button("Translate"):
         ]
         try:
             response = client.chat.completions.create(
-                model=model_choice,
+                model="gpt-4",
                 messages=messages,
                 temperature=0.8,
                 max_tokens=60
             )
             poetic_response = response.choices[0].message.content.strip()
-            st.markdown("### 🌸 Your Line:")
+            st.markdown("### ð¸ Your Line:")
             st.success(poetic_response)
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
-# Display all poetic styles on screen
-st.markdown("---")
-st.markdown("### ✨ Poetic Styles")
-
-for style_name, prompt in poetic_modes.items():
-    description = prompt.split('.')[0]
-    if style_name == selected_style:
-        st.markdown(f"**🟢 {style_name}** — _{description}..._")
-    else:
-        st.markdown(f"**{style_name}** — _{description}..._")
-
 # Footer
 st.markdown("---")
-st.markdown("<div style='color:#29a329;'>Made with 🕊️ by VIREO</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#29a329;'>Made with ðï¸ by VIREO</div>", unsafe_allow_html=True)
