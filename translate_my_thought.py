@@ -50,7 +50,7 @@ st.markdown(f"""
 # -------------------------
 # Logo + Title
 # -------------------------
-st.image("assets/VIREO.svg", width=300).
+st.image("assets/VIREO.svg", width=300)
 st.markdown(f"<h2 style='color:{VIREO_GREEN}; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 
 # -------------------------
