@@ -50,8 +50,14 @@ st.markdown(f"""
 # -------------------------
 # Logo + Title
 # -------------------------
-st.image("assets/VIREO.svg", width=300)
-st.markdown(f"<h2 style='color:{VIREO_GREEN}; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
+# ---------------------------------
+# Logo (SVG embed so it stays sharp)
+# ---------------------------------
+VIREO_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 240">
+  <!-- paste the full SVG content here -->
+</svg>"""
+
+st.markdown(f"<div style='width:300px;margin:0 auto'>{VIREO_SVG}</div>", unsafe_allow_html=True)
 
 # -------------------------
 # Sidebar: Mode + Paywall
