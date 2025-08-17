@@ -7,7 +7,7 @@ from streamlit.components.v1 import html
 # -------------------------
 # Config
 # -------------------------
-LOGO_PATH = "assets/VIREO.svg"
+#LOGO_PATH = "assets/VIREO.svg"
 VIREO_GREEN = "#29a329"
 PAGE_TITLE = "VIREO — Translate My Thought"
 
