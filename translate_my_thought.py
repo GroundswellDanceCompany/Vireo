@@ -254,39 +254,45 @@ if st.button("Translate"):
 # -----------------------------
 if poetic_response:
     st.markdown("#### Share")
-    
+
     # Auto-append subtle tag
     share_text = f"{poetic_response}  #VIREO"
     copy_button(share_text, "📋 Copy line")
 
     encoded = urllib.parse.quote(share_text)
 
-    # ✅ X/Twitter (prefilled text)
+    # Share links
     twitter  = f"https://twitter.com/intent/tweet?text={encoded}"
-
-    # ✅ WhatsApp (prefilled text)
     whatsapp = f"https://wa.me/?text={encoded}"
-
-    # ✅ Telegram (prefilled text)
     telegram = f"https://t.me/share/url?url=&text={encoded}"
-
-    # ✅ Email
     mailto   = f"mailto:?subject=VIREO%20line&body={encoded}"
+    fb       = f"https://www.facebook.com/sharer/sharer.php?u=https://github.com/yourname/vireo&quote={encoded}"
+    threads  = f"https://www.threads.net/intent/post?text={encoded}"
+    instagram = "https://www.instagram.com/"  # users paste copied line here
 
-    # ✅ Facebook — requires a URL; quote can carry your line
-    # Replace this with your site/repo URL when you’re ready
-    share_url = "https://github.com/yourname/vireo"  
-    fb = (
-        "https://www.facebook.com/sharer/sharer.php?"
-        f"u={urllib.parse.quote(share_url)}&quote={encoded}"
-    )
+    # Button styles
+    st.markdown("""
+        <style>
+        .share-btn {
+            display: inline-block;
+            margin: 4px;
+            padding: 6px 12px;
+            font-size: 14px;
+            background-color: white;
+            color: black !important;
+            border: 1px solid black;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .share-btn:hover {
+            background-color: black;
+            color: white !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    # ✅ Threads — supports text intent
-    threads = f"https://www.threads.net/intent/post?text={encoded}"
-
-    # ⚠️ Instagram — no official text intent
-    instagram = "https://www.instagram.com/"
-
+    # Render buttons
     st.markdown(
         f"""
         <a class="share-btn" href="{twitter}" target="_blank">🐦 X/Twitter</a>
