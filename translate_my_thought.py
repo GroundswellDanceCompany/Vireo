@@ -1,14 +1,13 @@
-
 import streamlit as st
 from openai import OpenAI
 from PIL import Image
 import json
 
-# Load poetic modes from file
+# Load poetic modes from JSON
 with open("poetic_modes.json", "r") as f:
     poetic_modes = json.load(f)
 
-# Inject custom green theme styling
+# Custom green theme styling
 st.markdown("""
     <style>
     html, body, [class*="css"]  {
@@ -37,18 +36,12 @@ st.image(logo, width=200)
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
-# Sidebar: Model selector and poetic mode
+# Sidebar: Settings
 st.sidebar.title("⚙️ Settings")
-model_choice = st.sidebar.radio(
-    "Choose a model:",
-    options=["gpt-3.5-turbo", "gpt-4"],
-    index=0
-)
+model_choice = st.sidebar.radio("Choose a model:", options=["gpt-3.5-turbo", "gpt-4"], index=0)
+selected_style = st.sidebar.selectbox("Poetic Style", list(poetic_modes.keys()))
 
-poetic_style = st.sidebar.selectbox("🎭 Poetic Style", list(poetic_modes.keys()), index=0)
-system_prompt = poetic_modes[poetic_style]
-
-# App Title & Description
+# Main Title
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
@@ -60,11 +53,11 @@ if st.button("Translate"):
     if user_input.strip() == "":
         st.warning("Please enter a thought to translate.")
     else:
+        system_prompt = poetic_modes[selected_style]
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
         ]
-
         try:
             response = client.chat.completions.create(
                 model=model_choice,
@@ -75,7 +68,6 @@ if st.button("Translate"):
             poetic_response = response.choices[0].message.content.strip()
             st.markdown("### 🌸 Your Line:")
             st.success(poetic_response)
-
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
