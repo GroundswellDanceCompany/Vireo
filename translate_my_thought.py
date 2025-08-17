@@ -1,7 +1,12 @@
+
 import streamlit as st
 from openai import OpenAI
 from PIL import Image
+import json
 
+# Load poetic modes from file
+with open("poetic_modes.json", "r") as f:
+    poetic_modes = json.load(f)
 
 # Inject custom green theme styling
 st.markdown("""
@@ -32,7 +37,7 @@ st.image(logo, width=200)
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
-# Sidebar: Model selector
+# Sidebar: Model selector and poetic mode
 st.sidebar.title("⚙️ Settings")
 model_choice = st.sidebar.radio(
     "Choose a model:",
@@ -40,29 +45,21 @@ model_choice = st.sidebar.radio(
     index=0
 )
 
+poetic_style = st.sidebar.selectbox("🎭 Poetic Style", list(poetic_modes.keys()), index=0)
+system_prompt = poetic_modes[poetic_style]
+
 # App Title & Description
-#st.title("Translate My Thought")
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
 # User input
-user_input = st.text_area(
-    "Your thought:",
-    placeholder="e.g. 'I feel stuck and overwhelmed.'",
-    height=100
-)
+user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
 
 # Translate button
 if st.button("Translate"):
     if user_input.strip() == "":
         st.warning("Please enter a thought to translate.")
     else:
-        system_prompt = """
-        You are a poetic translator. Take any input — raw, honest, angry, sad, mundane — and return a one-line poetic response.
-        Your response should be emotionally intelligent, metaphorical, gentle, and resonant.
-        Speak like a friend who understands the soul. Keep it short. Never explain.
-        """
-
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
