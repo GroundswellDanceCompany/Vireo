@@ -47,7 +47,7 @@ if HERO.exists():
         unsafe_allow_html=True
     )
 else:
-    st.warning("Add your image at assets/vireo_hero.jpg")
+    st.warning("Add your image at assets/vireo_hero.png")
 
 st.write("")
 st.write("A tiny tool to turn raw thoughts into one clear line.")
