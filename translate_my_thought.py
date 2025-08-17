@@ -122,7 +122,7 @@ with col1:
         st.session_state.style_select = random.choice(style_names)
         st.rerun()
 with col2:
-    selected_style = st.selectbox("Style", style_names, key="style_select")
+    selected_style = st.selectbox("Poetic Style", style_names, key="style_select")
 
 resolved_prompt = poetic_modes[selected_style]
 resolved_description = resolved_prompt.split(".")[0]
