@@ -127,7 +127,7 @@ def demo_translate(thought: str, style: str) -> str:
 # ---------------------------------
 # Copy-to-clipboard (no deps)
 # ---------------------------------
-def copy_button(text: str, label: str = "📋 Copy"):
+def copy_button(text: str, label: str = "Copy"):
     safe = text.replace("\\", "\\\\").replace("`", "\\`").replace('"', '\\"').replace("\n", "\\n")
     html(f"""
         <button onclick="navigator.clipboard.writeText(`{safe}`)"
@@ -257,7 +257,7 @@ if poetic_response:
 
     # Auto-append subtle tag
     share_text = f"{poetic_response}  #VIREO"
-    copy_button(share_text, "📋 Copy line")
+    copy_button(share_text, "Copy line")
 
     encoded = urllib.parse.quote(share_text)
 
@@ -301,7 +301,7 @@ if poetic_response:
         <a class="share-btn" href="{mailto}" target="_blank">✉ Email</a>
         <a class="share-btn" href="{fb}" target="_blank"> Facebook</a>
         <a class="share-btn" href="{threads}" target="_blank"> Threads</a>
-        <a class="share-btn" href="{instagram}" target="_blank" title="Copy the line first, then paste into Instagram">📸 Instagram</a>
+        <a class="share-btn" href="{instagram}" target="_blank" title="Copy the line first, then paste into Instagram"> Instagram</a>
         """,
         unsafe_allow_html=True
     )
