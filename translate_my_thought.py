@@ -2,8 +2,6 @@ import streamlit as st
 from openai import OpenAI
 from PIL import Image
 
-# Page config
-st.set_page_config(page_title="Translate My Thought", layout="centered")
 
 # Inject custom green theme styling
 st.markdown("""
