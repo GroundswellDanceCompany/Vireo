@@ -1,0 +1,43 @@
+<!-- VIREO logo — refined geometric mark + word -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 240">
+  <defs>
+    <!-- Brand green -->
+    <style>
+      .g { stroke:#29a329; fill:none; stroke-width:10; stroke-linecap:round; stroke-linejoin:round; }
+      .f { fill:#29a329; }
+      .t { fill:#29a329; font-size:120px; font-weight:700; font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Bird mark (left) -->
+  <!-- Body outline -->
+  <path class="g" d="
+      M120 175
+      C 95 175, 70 158, 70 132
+      C 70 103, 95 78, 128 78
+      C 145 78, 159 82, 170 90
+      L 198 78
+      L 220 84
+      L 198 98
+      C 208 111, 214 127, 214 144
+      C 214 172, 189 192, 156 192
+      C 143 192, 131 188, 120 182
+      Z" />
+
+  <!-- Wing (inner leaf) -->
+  <path class="g" d="M132 100 C112 115, 108 140, 136 160 C165 141, 168 117, 150 104" />
+
+  <!-- Eye -->
+  <circle class="f" cx="148" cy="103" r="6" />
+
+  <!-- Tail -->
+  <path class="g" d="M102 188 L78 220" />
+  <path class="g" d="M118 186 L100 220" />
+
+  <!-- Legs -->
+  <path class="g" d="M142 190 L142 208" />
+  <path class="g" d="M100 208 L172 208" />
+
+  <!-- Wordmark -->
+  <text class="t" x="300" y="160" letter-spacing="2">VIREO</text>
+</svg>
