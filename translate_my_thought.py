@@ -2,11 +2,6 @@ import streamlit as st
 from openai import OpenAI
 from PIL import Image
 
-# Load and display logo
-logo = Image.open("assets/VIREO.png")  # Adjust path if needed
-st.image(logo, width=150)  # Adjust width as desired
-    
-
 # Page config
 st.set_page_config(page_title="Translate My Thought", layout="centered")
 
@@ -14,7 +9,7 @@ st.set_page_config(page_title="Translate My Thought", layout="centered")
 st.markdown("""
     <style>
     html, body, [class*="css"]  {
-        color: #29a329 !important;  /* Vireo green */
+        color: #29a329 !important;
     }
     .stButton>button {
         background-color: #29a329 !important;
@@ -32,6 +27,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Load and display logo
+logo = Image.open("assets/VIREO.png")
+st.image(logo, width=320)
+st.markdown(
+    "<div style='text-align:center; color:#29a329; font-size:14px;'>translate my thought</div>",
+    unsafe_allow_html=True
+)
+
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
@@ -40,10 +43,10 @@ st.sidebar.title("⚙️ Settings")
 model_choice = st.sidebar.radio(
     "Choose a model:",
     options=["gpt-3.5-turbo", "gpt-4"],
-    index=0  # Default to GPT-3.5
+    index=0
 )
 
-# App Title
+# App Title & Description
 st.title("Translate My Thought")
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
@@ -71,13 +74,13 @@ if st.button("Translate"):
         ]
 
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model=model_choice,
                 messages=messages,
                 temperature=0.8,
                 max_tokens=60
             )
-            poetic_response = response.choices[0].message["content"].strip()
+            poetic_response = response.choices[0].message.content.strip()
             st.markdown("### 🌸 Your Line:")
             st.success(poetic_response)
 
@@ -86,4 +89,4 @@ if st.button("Translate"):
 
 # Footer
 st.markdown("---")
-st.markdown("Made with 🕊️ by VIREO")
+st.markdown("<div style='color:#29a329;'>Made with 🕊️ by VIREO</div>", unsafe_allow_html=True)
