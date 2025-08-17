@@ -50,7 +50,7 @@ st.markdown(f"""
 # -------------------------
 # Logo + Title
 # -------------------------
-st.image(Image.open(LOGO_PATH), width=200)
+st.image(Image.open(LOGO_PATH), width=144)
 st.markdown(f"<h2 style='color:{VIREO_GREEN}; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 
 # -------------------------
