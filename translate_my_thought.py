@@ -50,14 +50,22 @@ st.markdown(f"""
 # -------------------------
 # Logo + Title
 # -------------------------
-# ---------------------------------
-# Logo (SVG embed so it stays sharp)
-# ---------------------------------
-VIREO_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 240">
-  <!-- paste the full SVG content here -->
-</svg>"""
+# --- Logo loader (file-based) ---
+from pathlib import Path
 
-st.markdown(f"<div style='width:300px;margin:0 auto'>{VIREO_SVG}</div>", unsafe_allow_html=True)
+def show_logo(width_px: int = 300):
+    svg_path = Path("assets/VIREO.svg")
+    if svg_path.exists():
+        svg = svg_path.read_text(encoding="utf-8")
+        st.markdown(
+            f"<div style='width:{width_px}px;margin:0 auto'>{svg}</div>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.warning("Logo not found!")
+
+# call this where you want the logo:
+show_logo(300)
 
 # -------------------------
 # Sidebar: Mode + Paywall
