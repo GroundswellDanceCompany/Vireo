@@ -1,8 +1,7 @@
 import streamlit as st
-from openai import OpenAI
 from PIL import Image
-import json
-import random
+from openai import OpenAI
+import json, random
 
 # -----------------------------
 # Load poetic modes from JSON
@@ -36,12 +35,20 @@ logo = Image.open("assets/VIREO.png")
 st.image(logo, width=200)
 
 # -----------------------------
-# OpenAI client & sidebar settings
+# Sidebar settings
 # -----------------------------
-client = OpenAI(api_key=st.secrets["openai"]["api_key"])
-
 st.sidebar.title("⚙️ Settings")
-model_choice = st.sidebar.radio("Choose a model:", ["gpt-3.5-turbo", "gpt-4"], index=0)
+demo_mode = st.sidebar.checkbox("🧪 Demo mode (no API)", value=True)
+model_choice = st.sidebar.radio("Model (when demo is off):", ["gpt-3.5-turbo", "gpt-4"], index=0)
+
+# Try to create client only if not in demo mode
+client = None
+if not demo_mode:
+    try:
+        client = OpenAI(api_key=st.secrets["openai"]["api_key"])
+    except Exception:
+        st.sidebar.error("No valid OpenAI API key found in secrets. Using Demo mode instead.")
+        demo_mode = True
 
 # -----------------------------
 # Title & intro
@@ -50,14 +57,12 @@ st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought<
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
 # -----------------------------
-# Style selection row: Surprise Me + dropdown
-# (Initialize state BEFORE rendering widgets)
+# Surprise Me + dropdown
 # -----------------------------
 if "style_select" not in st.session_state:
     st.session_state.style_select = style_names[0]
 
 col1, col2 = st.columns([1, 3])
-
 with col1:
     if st.button("🎲 Surprise Me"):
         st.session_state.style_select = random.choice(style_names)
@@ -65,47 +70,84 @@ with col1:
 
 with col2:
     selected_style = st.selectbox(
-        "Choose a poetic style:",
+        "🎭 Choose a poetic style:",
         style_names,
-        key="style_select"  # bound to session state
+        key="style_select"
     )
 
-# Resolved prompt & short description
 resolved_prompt = poetic_modes[selected_style]
-resolved_description = resolved_prompt.split(".")[0]  # first sentence as a brief description
+resolved_description = resolved_prompt.split(".")[0]
 st.markdown(
     f"<p style='color:#29a329; font-style:italic;'>“{resolved_description}.”</p>",
     unsafe_allow_html=True
 )
 
 # -----------------------------
-# User input
+# Input
 # -----------------------------
 user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
 
 # -----------------------------
-# Translate button
+# Demo generator
+# -----------------------------
+def demo_translate(thought: str, style: str) -> str:
+    t = thought.strip() or "this moment"
+    base = {
+        "Poetic": f"Like tide over stone, {t} learns to soften.",
+        "Stoic": f"{t.capitalize()} is opinion; choose the next right action.",
+        "Shakespearean": f"'{t}' doth weigh my breast—yet still I breathe and onward go.",
+        "Deep": f"The root of {t} is asking to be seen.",
+        "Comic": f"{t}? You’re not broken—you’re buffering. Try a heart refresh.",
+        "Zen": f"{t} is a cloud; the sky remains.",
+        "Mystical": f"Within {t}, a hidden lantern waits for your name.",
+        "Mythic Mirror": f"You stand at the gate of {t}; the key is your true name.",
+        "Haiku": f"{t} in one breath—\nold knots loosening slowly—\nspring finds a small door",
+        "Lyrical": f"I hum through {t} till the melody turns me light.",
+        "Oracular": f"From {t}, a sign: choose the narrow way and become wide.",
+        "Surrealist": f"{t} grew feathers; the clock drank the sea.",
+        "Romantic": f"In {t}, the heart still hears a distant, faithful lighthouse.",
+        "Minimalist": f"{t}. Then—space.",
+        "Elegiac": f"I lay down the old name of {t} and listen for the quiet.",
+        "Epic/Grand": f"Across the ridge of {t}, your small step moves the mountain.",
+        "Satirical": f"{t}? Install fewer chaos-plugins.",
+        "Ecstatic (Rumi-style)": f"Beloved, even {t} is a doorway wearing your face.",
+        "Journal-style": f"Today felt like {t}. One truthful line eased it.",
+        "Rap/Spoken Word": f"{t} in my chest—ride the beat, let the walls confess.",
+        "Childlike": f"{t} feels big. I am bigger.",
+        "Cinematic": f"The room tightens with {t}; a window brightens—you exhale."
+    }
+    return base.get(style, f"{t} turns toward light.")
+
+# -----------------------------
+# Translate
 # -----------------------------
 if st.button("Translate"):
     if user_input.strip() == "":
         st.warning("Please enter a thought to translate.")
     else:
-        messages = [
-            {"role": "system", "content": resolved_prompt},
-            {"role": "user", "content": user_input}
-        ]
-        try:
-            response = client.chat.completions.create(
-                model=model_choice,
-                messages=messages,
-                temperature=0.8,
-                max_tokens=60
-            )
-            poetic_response = response.choices[0].message.content.strip()
-            st.markdown("### 🌸 Your Line:")
+        if demo_mode or client is None:
+            poetic_response = demo_translate(user_input, selected_style)
+            st.markdown("### 🌸 Your Line (Demo):")
             st.success(poetic_response)
-        except Exception as e:
-            st.error(f"Something went wrong: {e}")
+        else:
+            messages = [
+                {"role": "system", "content": resolved_prompt},
+                {"role": "user", "content": user_input}
+            ]
+            try:
+                response = client.chat.completions.create(
+                    model=model_choice,
+                    messages=messages,
+                    temperature=0.8,
+                    max_tokens=60
+                )
+                poetic_response = response.choices[0].message.content.strip()
+                st.markdown("### 🌸 Your Line:")
+                st.success(poetic_response)
+            except Exception as e:
+                st.error(f"API error: {e}")
+                st.info("Falling back to Demo mode.")
+                st.success(demo_translate(user_input, selected_style))
 
 # -----------------------------
 # Footer
