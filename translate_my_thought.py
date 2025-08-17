@@ -1,15 +1,22 @@
 import streamlit as st
 from openai import OpenAI
 from PIL import Image
-import json, random
+import json
+import random
 
-# --- Load poetic modes from JSON (must be next to this script) ---
+# -----------------------------
+# Load poetic modes from JSON
+# -----------------------------
 with open("poetic_modes.json", "r") as f:
     poetic_modes = json.load(f)
 
 style_names = list(poetic_modes.keys())
 
-# --- THEME (VIREO green) ---
+# -----------------------------
+# Page config & Theme (VIREO green)
+# -----------------------------
+st.set_page_config(page_title="Translate My Thought", layout="centered")
+
 st.markdown("""
     <style>
     html, body, [class*="css"]  { color: #29a329 !important; }
@@ -22,53 +29,63 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- LOGO ---
+# -----------------------------
+# Logo
+# -----------------------------
 logo = Image.open("assets/VIREO.png")
 st.image(logo, width=200)
 
-# --- API client ---
+# -----------------------------
+# OpenAI client & sidebar settings
+# -----------------------------
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
-# --- Sidebar: Model toggle (keeps costs flexible) ---
 st.sidebar.title("⚙️ Settings")
 model_choice = st.sidebar.radio("Choose a model:", ["gpt-3.5-turbo", "gpt-4"], index=0)
 
-# --- Title & intro ---
+# -----------------------------
+# Title & intro
+# -----------------------------
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
-# --- Style selection row: dropdown + Surprise Me button ---
-# Keep a stable index in session_state so the button can update the dropdown
-if "style_index" not in st.session_state:
-    st.session_state.style_index = 0  # default to first style
+# -----------------------------
+# Style selection row: Surprise Me + dropdown
+# (Initialize state BEFORE rendering widgets)
+# -----------------------------
+if "style_select" not in st.session_state:
+    st.session_state.style_select = style_names[0]
 
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([1, 3])
+
 with col1:
+    if st.button("🎲 Surprise Me"):
+        st.session_state.style_select = random.choice(style_names)
+        st.rerun()
+
+with col2:
     selected_style = st.selectbox(
         "🎭 Choose a poetic style:",
         style_names,
-        index=st.session_state.style_index,
-        key="style_select"
+        key="style_select"  # bound to session state
     )
-with col2:
-    if st.button("🎲 Surprise Me"):
-        st.session_state.style_index = random.randrange(len(style_names))
-        # Update the selectbox value too
-        st.session_state.style_select = style_names[st.session_state.style_index]
-        st.experimental_rerun()
 
-# Ensure selected_style reflects the current index/value
-selected_style = st.session_state.get("style_select", style_names[st.session_state.style_index])
-
-# --- Brief description under selected style (first sentence of prompt) ---
+# Resolved prompt & short description
 resolved_prompt = poetic_modes[selected_style]
-resolved_description = resolved_prompt.split(".")[0]  # show first sentence only
-st.markdown(f"<p style='color:#29a329; font-style:italic;'>“{resolved_description}.”</p>", unsafe_allow_html=True)
+resolved_description = resolved_prompt.split(".")[0]  # first sentence as a brief description
+st.markdown(
+    f"<p style='color:#29a329; font-style:italic;'>“{resolved_description}.”</p>",
+    unsafe_allow_html=True
+)
 
-# --- Input ---
+# -----------------------------
+# User input
+# -----------------------------
 user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
 
-# --- Translate ---
+# -----------------------------
+# Translate button
+# -----------------------------
 if st.button("Translate"):
     if user_input.strip() == "":
         st.warning("Please enter a thought to translate.")
@@ -90,6 +107,8 @@ if st.button("Translate"):
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
-# --- Footer ---
+# -----------------------------
+# Footer
+# -----------------------------
 st.markdown("---")
 st.markdown("<div style='color:#29a329;'>Made with 🕊️ by VIREO</div>", unsafe_allow_html=True)
