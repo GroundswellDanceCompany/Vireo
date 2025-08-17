@@ -278,16 +278,16 @@ if poetic_response:
             margin: 4px;
             padding: 6px 12px;
             font-size: 14px;
-            background-color: white;
-            color: black !important;
-            border: 1px solid black;
+            background-color: black;
+            color: #29a329 !important;
+            border: 1px solid #29a329;
             border-radius: 5px;
             text-decoration: none;
             transition: 0.2s;
         }
         .share-btn:hover {
-            background-color: black;
-            color: white !important;
+            background-color: #29a329;
+            color: black !important;
         }
         </style>
     """, unsafe_allow_html=True)
