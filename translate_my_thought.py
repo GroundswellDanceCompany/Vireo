@@ -51,25 +51,20 @@ st.markdown(f"""
 # Logo + Title
 # -------------------------
 # --- Logo loader (file-based) ---
-from pathlib import Path
-import base64
-import streamlit as st
-
-def show_logo(width_px=260):
-    svg_path = Path("assets/VIREO.svg")
-    if not svg_path.exists():
-        st.warning("assets/VIREO.svg not found"); return
-    svg = svg_path.read_text(encoding="utf-8")
-    b64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
-    st.markdown(
-        f"<div style='text-align:center'>"
-        f"<img src='data:image/svg+xml;base64,{b64}' width='{width_px}' style='display:inline-block'/>"
-        f"</div>",
-        unsafe_allow_html=True,
-    )
-
-# use it:
-show_logo(260)
+# ---------------------------------
+# Logo / Title
+# ---------------------------------
+st.markdown(
+    """
+    <div style="text-align:center; margin-bottom: 2rem;">
+        <h1 style="color:white; font-size: 3rem; font-weight: 800; margin:0;">VIREO</h1>
+        <h3 style="color:#29a329; font-size: 1.2rem; font-weight: 500; margin-top:0.5rem;">
+            Translate my thought
+        </h3>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # -------------------------
 # Sidebar: Mode + Paywall
