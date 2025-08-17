@@ -29,11 +29,7 @@ st.markdown("""
 
 # Load and display logo
 logo = Image.open("assets/VIREO.png")
-st.image(logo, width=320)
-st.markdown(
-    "<div style='text-align:center; color:#29a329; font-size:14px;'>translate my thought</div>",
-    unsafe_allow_html=True
-)
+st.image(logo, width=300)
 
 # Load API key
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
