@@ -249,15 +249,43 @@ if st.button("Translate"):
 # ---------------------------------
 # Share & Copy (render only if we have a line)
 # ---------------------------------
+# -----------------------------
+# Share & Copy (render only if we have a line)
+# -----------------------------
 if poetic_response:
     st.markdown("#### Share")
-    copy_button(poetic_response, "📋 Copy line")
+    
+    # Auto-append subtle tag
+    share_text = f"{poetic_response}  #VIREO"
+    copy_button(share_text, "📋 Copy line")
 
-    encoded = urllib.parse.quote(poetic_response)
+    encoded = urllib.parse.quote(share_text)
+
+    # ✅ X/Twitter (prefilled text)
     twitter  = f"https://twitter.com/intent/tweet?text={encoded}"
+
+    # ✅ WhatsApp (prefilled text)
     whatsapp = f"https://wa.me/?text={encoded}"
+
+    # ✅ Telegram (prefilled text)
     telegram = f"https://t.me/share/url?url=&text={encoded}"
+
+    # ✅ Email
     mailto   = f"mailto:?subject=VIREO%20line&body={encoded}"
+
+    # ✅ Facebook — requires a URL; quote can carry your line
+    # Replace this with your site/repo URL when you’re ready
+    share_url = "https://github.com/yourname/vireo"  
+    fb = (
+        "https://www.facebook.com/sharer/sharer.php?"
+        f"u={urllib.parse.quote(share_url)}&quote={encoded}"
+    )
+
+    # ✅ Threads — supports text intent
+    threads = f"https://www.threads.net/intent/post?text={encoded}"
+
+    # ⚠️ Instagram — no official text intent
+    instagram = "https://www.instagram.com/"
 
     st.markdown(
         f"""
@@ -265,25 +293,12 @@ if poetic_response:
         <a class="share-btn" href="{whatsapp}" target="_blank">💬 WhatsApp</a>
         <a class="share-btn" href="{telegram}" target="_blank">📨 Telegram</a>
         <a class="share-btn" href="{mailto}" target="_blank">✉️ Email</a>
+        <a class="share-btn" href="{fb}" target="_blank">📘 Facebook</a>
+        <a class="share-btn" href="{threads}" target="_blank">🧵 Threads</a>
+        <a class="share-btn" href="{instagram}" target="_blank" title="Copy the line first, then paste into Instagram">📸 Instagram</a>
         """,
         unsafe_allow_html=True
     )
-
-    # Create Image Card
-    if st.button("🖼️ Create Image Card"):
-        card_img = create_share_card(poetic_response, selected_style, logo)
-        # Preview
-        st.image(card_img, caption="Preview", use_column_width=True)
-        # Download bytes
-        buf = io.BytesIO()
-        card_img.save(buf, format="PNG")
-        png_bytes = buf.getvalue()
-        st.download_button(
-            "⬇️ Download PNG",
-            data=png_bytes,
-            file_name="vireo_card.png",
-            mime="image/png"
-        )
 
 # ---------------------------------
 # Footer
