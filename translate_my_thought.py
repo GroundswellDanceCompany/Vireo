@@ -1,4 +1,3 @@
-
 import streamlit as st
 from openai import OpenAI
 from PIL import Image
@@ -41,8 +40,13 @@ client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 st.markdown("<h2 style='color:#29a329; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Let it go.")
 
-# Poetic style selector on main page
-selected_style = st.selectbox("Choose a poetic style:", list(poetic_modes.keys()))
+# Poetic style selector
+style_names = list(poetic_modes.keys())
+selected_style = st.selectbox("🎭 Choose a poetic style:", style_names)
+
+# Brief description under selected style
+selected_description = poetic_modes[selected_style].split(".")[0]
+st.markdown(f"<p style='color:#29a329; font-style:italic;'>“{selected_description}.”</p>", unsafe_allow_html=True)
 
 # User input
 user_input = st.text_area("Your thought:", placeholder="e.g. 'I feel stuck and overwhelmed.'", height=100)
@@ -65,11 +69,11 @@ if st.button("Translate"):
                 max_tokens=60
             )
             poetic_response = response.choices[0].message.content.strip()
-            st.markdown("Your Line:")
+            st.markdown("### 🌸 Your Line:")
             st.success(poetic_response)
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
 # Footer
 st.markdown("---")
-st.markdown("<div style='color:#29a329;'>Made with 🌿 by VIREO</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#29a329;'>Made with 🕊️ by VIREO</div>", unsafe_allow_html=True)
