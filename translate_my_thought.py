@@ -42,7 +42,7 @@ st.markdown("Type anything you're thinking or feeling. One line. Honest. Raw. Le
 
 # Poetic style selector
 style_names = list(poetic_modes.keys())
-selected_style = st.selectbox("🎭 Choose a poetic style:", style_names)
+selected_style = st.selectbox("Choose a poetic style:", style_names)
 
 # Brief description under selected style
 selected_description = poetic_modes[selected_style].split(".")[0]
