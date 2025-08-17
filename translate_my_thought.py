@@ -40,6 +40,10 @@ st.markdown(f"""
         float:right; font-size:12px; padding:4px 8px; border-radius:999px;
         border:1px solid {VIREO_GREEN}; color:{VIREO_GREEN};
     }}
+    .error-pill {{
+        display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px;
+        border:1px solid #ff4d4f; color:#ff4d4f; margin-left:6px;
+    }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -50,21 +54,61 @@ st.image(Image.open(LOGO_PATH), width=200)
 st.markdown(f"<h2 style='color:{VIREO_GREEN}; text-align:center;'>Translate My Thought</h2>", unsafe_allow_html=True)
 
 # -------------------------
-# Mode: Auto-detect Demo/API
+# Sidebar: Mode + Paywall
 # -------------------------
-api_key = None
+st.sidebar.title("⚙️ Mode")
+mode = st.sidebar.radio("Select mode:", ["Demo (free)", "API (paid)"], index=0)
+
+# Optional: Stripe/Gumroad checkout link
+checkout_url = None
 try:
-    api_key = st.secrets["openai"]["api_key"]
+    checkout_url = st.secrets["paywall"].get("checkout_url", None)
 except Exception:
+    checkout_url = None
+
+if mode == "API (paid)":
+    # Access codes stored in secrets
+    valid_codes = []
+    try:
+        cfg = st.secrets["paywall"]
+        if isinstance(cfg.get("codes"), list):
+            valid_codes = [str(c).strip() for c in cfg["codes"]]
+        elif isinstance(cfg.get("code"), str):
+            valid_codes = [cfg["code"].strip()]
+    except Exception:
+        pass
+
+    access_code = st.sidebar.text_input("Access code", type="password")
+    # Show a buy button if configured
+    if checkout_url:
+        st.sidebar.markdown(f"[Buy access →]({checkout_url})")
+
+    # API key lookup
     api_key = None
+    try:
+        api_key = st.secrets["openai"]["api_key"]
+    except Exception:
+        api_key = None
 
-demo_mode = api_key is None
-if demo_mode:
-    st.markdown(f"<div class='status-pill'>Demo mode</div>", unsafe_allow_html=True)
+    code_ok = (access_code.strip() in valid_codes) if valid_codes else False
+    api_ok  = api_key is not None and len(api_key.strip()) > 0
+
+    if not code_ok or not api_ok:
+        st.markdown(f"<div class='status-pill'>API mode (locked)</div>", unsafe_allow_html=True)
+        if not code_ok:
+            st.sidebar.markdown("<span class='error-pill'>Invalid or missing access code</span>", unsafe_allow_html=True)
+        if not api_ok:
+            st.sidebar.markdown("<span class='error-pill'>Missing OpenAI API key</span>", unsafe_allow_html=True)
+        client = None
+        demo_mode = True
+    else:
+        st.markdown(f"<div class='status-pill'>API mode</div>", unsafe_allow_html=True)
+        client = OpenAI(api_key=api_key)
+        demo_mode = False
 else:
-    st.markdown(f"<div class='status-pill'>API mode</div>", unsafe_allow_html=True)
-
-client = OpenAI(api_key=api_key) if not demo_mode else None
+    st.markdown(f"<div class='status-pill'>Demo mode</div>", unsafe_allow_html=True)
+    client = None
+    demo_mode = True
 
 # -------------------------
 # Style picker (Surprise + Dropdown)
@@ -152,7 +196,7 @@ if st.button("Translate"):
                     {"role": "user", "content": user_input}
                 ]
                 resp = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                    model="gpt-3.5-turbo",  # keep costs low; switch to gpt-4 if you prefer
                     messages=messages,
                     temperature=0.8,
                     max_tokens=60
