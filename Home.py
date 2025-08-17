@@ -3,7 +3,7 @@ from pathlib import Path
 
 st.set_page_config(page_title="VIREO", layout="wide")
 
-HERO = Path("assets/vireo_hero.jpg")  # change to .png if needed
+HERO = Path("assets/vireo_hero.png")  # change to .png if needed
 VIREO_GREEN = "#29a329"
 
 # --- Simple CSS to reduce padding + center content
