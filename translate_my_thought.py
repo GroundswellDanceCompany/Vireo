@@ -65,7 +65,7 @@ with col1:
 
 with col2:
     selected_style = st.selectbox(
-        "🎭 Choose a poetic style:",
+        "Choose a poetic style:",
         style_names,
         key="style_select"  # bound to session state
     )
