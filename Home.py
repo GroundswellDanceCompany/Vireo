@@ -57,7 +57,7 @@ st.write("A tiny tool to turn raw thoughts into one clear line.")
 st.page_link(
     "pages/01_Translate_My_Thought.py",
     label="🕊️ Open Translate My Thought",
-    icon=":dove_of_peace:"
+    icon="🕊️"   # or just omit this line
 )
 
 st.markdown("---")
