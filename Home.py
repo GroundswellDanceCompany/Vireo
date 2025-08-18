@@ -35,7 +35,7 @@ st.markdown(f"""
 # --- Hero
 if HERO.exists():
     st.markdown("<div class='hero'>", unsafe_allow_html=True)
-    st.image("assets/vireo_hero.jpg", use_container_width=True)
+    st.image("assets/vireo_hero.png", use_container_width=True)
     st.markdown(
         f"""
         <div class='hero-caption'>
