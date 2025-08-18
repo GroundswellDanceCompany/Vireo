@@ -54,9 +54,10 @@ st.write("A tiny tool to turn raw thoughts into one clear line.")
 
 # --- CTA to app page (Streamlit multipage)
 # Put your main app in pages/01_Translate_My_Thought.py
-st.markdown(
-    "<div class='cta'><a href='pages/01_Translate_My_Thought.py'>🕊️ Open Translate My Thought</a></div>",
-    unsafe_allow_html=True
+st.page_link(
+    "pages/01_Translate_My_Thought.py",
+    label="🕊️ Open Translate My Thought",
+    icon=":dove_of_peace:"
 )
 
 st.markdown("---")
