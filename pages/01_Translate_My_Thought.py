@@ -83,6 +83,17 @@ from pathlib import Path
 theme_css = Path("assets/vireo_theme.css").read_text(encoding="utf-8")
 st.markdown(f"<style>{theme_css}</style>", unsafe_allow_html=True)
 
+st.markdown(
+    """
+    <div style="text-align:center; margin: .6rem 0 1.1rem;">
+      <h1 id="vireo-title" style="margin:0; font-weight:800; font-size:2.6rem;">VIREO</h1>
+      <h3 style="margin:.3rem 0 0; font-weight:500; font-size:1rem; color:#29a329;">
+        Translate my thought
+      </h3>
+    </div>
+    """, unsafe_allow_html=True
+)
+
 # -------------------------
 # Logo / Title
 # -------------------------
