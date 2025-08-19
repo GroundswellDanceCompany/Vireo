@@ -7,16 +7,48 @@ from streamlit.components.v1 import html
 # -------------------------
 # Config
 # -------------------------
-#LOGO_PATH = "assets/VIREO.svg"
 VIREO_GREEN = "#29a329"
 PAGE_TITLE = "VIREO — Translate My Thought"
 
 # -------------------------
 # Data
 # -------------------------
-with open("poetic_modes.json", "r") as f:
+with open("poetic_modes.json", "r", encoding="utf-8") as f:
     poetic_modes = json.load(f)
-style_names = list(poetic_modes.keys())
+
+# Build style list (exclude _meta)
+style_names = [k for k in poetic_modes.keys() if k != "_meta"]
+
+# Helper to pull prompt/desc and examples for a style
+def get_style_block(modes, name):
+    block = modes[name]
+    if isinstance(block, dict):
+        prompt = block.get("prompt", "")
+        examples = block.get("examples", [])
+    else:
+        prompt = str(block)
+        examples = []
+    # First sentence (up to first period) as a short description
+    desc = prompt.split(".")[0].strip() if prompt else ""
+    return prompt, desc, examples
+
+# Build messages with system prefix + style prompt + few-shots + user
+def build_messages(modes, style_name, user_text):
+    sys_prefix = modes["_meta"]["system_prefix"]
+    style_prompt, _, examples = get_style_block(modes, style_name)
+
+    msgs = [
+        {"role": "system", "content": sys_prefix},
+        {"role": "system", "content": style_prompt},
+    ]
+    for ex in examples:
+        t = ex.get("thought", "").strip()
+        l = ex.get("line", "").strip()
+        if t and l:
+            msgs.append({"role": "user", "content": t})
+            msgs.append({"role": "assistant", "content": l})
+    msgs.append({"role": "user", "content": user_text.strip()})
+    return msgs
 
 # -------------------------
 # Page / Theme
@@ -48,12 +80,8 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -------------------------
-# Logo + Title
-# -------------------------
-# --- Logo loader (file-based) ---
-# ---------------------------------
 # Logo / Title
-# ---------------------------------
+# -------------------------
 st.markdown(
     """
     <div style="text-align:center; margin-bottom: 2rem;">
@@ -72,7 +100,6 @@ st.markdown(
 st.sidebar.title("⚙️ Mode")
 mode = st.sidebar.radio("Select mode:", ["Demo (free)", "API (paid)"], index=0)
 
-# Optional: Stripe/Gumroad checkout link
 checkout_url = None
 try:
     checkout_url = st.secrets["paywall"].get("checkout_url", None)
@@ -80,7 +107,6 @@ except Exception:
     checkout_url = None
 
 if mode == "API (paid)":
-    # Access codes stored in secrets
     valid_codes = []
     try:
         cfg = st.secrets["paywall"]
@@ -92,11 +118,9 @@ if mode == "API (paid)":
         pass
 
     access_code = st.sidebar.text_input("Access code", type="password")
-    # Show a buy button if configured
     if checkout_url:
         st.sidebar.markdown(f"[Buy access →]({checkout_url})")
 
-    # API key lookup
     api_key = None
     try:
         api_key = st.secrets["openai"]["api_key"]
@@ -137,9 +161,9 @@ with col1:
 with col2:
     selected_style = st.selectbox("Poetic Style", style_names, key="style_select")
 
-resolved_prompt = poetic_modes[selected_style]
-resolved_description = resolved_prompt.split(".")[0]
-st.markdown(f"<p style='color:{VIREO_GREEN}; font-style:italic;'>“{resolved_description}.”</p>", unsafe_allow_html=True)
+style_prompt, style_desc, _ = get_style_block(poetic_modes, selected_style)
+if style_desc:
+    st.markdown(f"<p style='color:{VIREO_GREEN}; font-style:italic;'>“{style_desc}.”</p>", unsafe_allow_html=True)
 
 # -------------------------
 # Input
@@ -154,13 +178,13 @@ def demo_translate(thought: str, style: str) -> str:
     samples = {
         "Poetic": f"Like tide over stone, {t} learns to soften.",
         "Stoic": f"{t.capitalize()} is opinion; choose the next right action.",
-        "Shakespearean": f"'{t}' doth weigh my breast—yet still I breathe and onward go.",
+        "Shakespearean": f"{t} weighs the hour; still, I answer dawn.",
         "Deep": f"The root of {t} is asking to be seen.",
         "Comic": f"{t}? You’re not broken—you’re buffering. Try a heart refresh.",
         "Zen": f"{t} is a cloud; the sky remains.",
         "Mystical": f"Within {t}, a hidden lantern waits for your name.",
         "Mythic Mirror": f"You stand at the gate of {t}; the key is your true name.",
-        "Haiku": f"{t} in one breath—\nold knots loosening slowly—\nspring finds a small door",
+        "Haiku": f"{t} in one breath— old knots loosening— spring finds a door",
         "Lyrical": f"I hum through {t} till the melody turns me light.",
         "Oracular": f"From {t}, a sign: choose the narrow way and become wide.",
         "Surrealist": f"{t} grew feathers; the clock drank the sea.",
@@ -204,12 +228,9 @@ if st.button("Translate"):
             st.success(poetic_response)
         else:
             try:
-                messages = [
-                    {"role": "system", "content": resolved_prompt},
-                    {"role": "user", "content": user_input}
-                ]
+                messages = build_messages(poetic_modes, selected_style, user_input)
                 resp = client.chat.completions.create(
-                    model="gpt-3.5-turbo",  # keep costs low; switch to gpt-4 if you prefer
+                    model="gpt-3.5-turbo",  # or "gpt-4o-mini" for slightly better tone at low cost
                     messages=messages,
                     temperature=0.8,
                     max_tokens=60
@@ -238,7 +259,7 @@ if poetic_response:
     mailto    = f"mailto:?subject=VIREO%20line&body={encoded}"
     fb        = f"https://www.facebook.com/sharer/sharer.php?u=https://github.com/yourname/vireo&quote={encoded}"
     threads   = f"https://www.threads.net/intent/post?text={encoded}"
-    instagram = "https://www.instagram.com/"  # paste copied line manually
+    instagram = "https://www.instagram.com/"
 
     st.markdown(
         f"""
