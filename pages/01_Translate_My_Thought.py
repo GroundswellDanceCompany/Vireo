@@ -280,4 +280,4 @@ if poetic_response:
 # Footer
 # -------------------------
 st.markdown("---")
-st.markdown(f"<div style='color:{VIREO_GREEN};'>Made with 🕊️ by VIREO</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='color:{VIREO_GREEN};'>Made with 🌱 by VIREO</div>", unsafe_allow_html=True)
