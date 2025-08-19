@@ -65,7 +65,7 @@ else:
 st.markdown("<p class='lead'>A tiny tool to turn raw thoughts into one clear line.</p>", unsafe_allow_html=True)
 
 # ---- CTA to the Translate page (Streamlit version–safe) ----
-label = "🕊️ Open Translate My Thought"
+label = "🌱 Open Translate My Thought"
 if hasattr(st, "page_link"):     # Streamlit ≥ 1.32
     st.page_link("pages/01_Translate_My_Thought.py", label=label)
 else:                            # Fallback for older versions
@@ -73,4 +73,4 @@ else:                            # Fallback for older versions
         st.switch_page("pages/01_Translate_My_Thought.py")
 
 st.markdown("---")
-st.caption("Made with 🕊️ by VIREO")
+st.caption("Made with 🌱 by VIREO")
