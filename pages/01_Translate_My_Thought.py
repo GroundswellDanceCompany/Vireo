@@ -1,8 +1,8 @@
 import streamlit as st
-from PIL import Image
 from openai import OpenAI
 import json, random, urllib.parse
 from streamlit.components.v1 import html
+from pathlib import Path
 
 # -------------------------
 # Config
@@ -28,7 +28,6 @@ def get_style_block(modes, name):
     else:
         prompt = str(block)
         examples = []
-    # First sentence (up to first period) as a short description
     desc = prompt.split(".")[0].strip() if prompt else ""
     return prompt, desc, examples
 
@@ -54,6 +53,8 @@ def build_messages(modes, style_name, user_text):
 # Page / Theme
 # -------------------------
 st.set_page_config(page_title=PAGE_TITLE, layout="centered")
+
+# Base tweaks (kept minimal; theme CSS adds the modern look)
 st.markdown(f"""
     <style>
     html, body, [class*="css"]  {{ color: {VIREO_GREEN} !important; }}
@@ -79,33 +80,19 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-from pathlib import Path
-theme_css = Path("assets/vireo_theme.css").read_text(encoding="utf-8")
-st.markdown(f"<style>{theme_css}</style>", unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <div style="text-align:center; margin: .6rem 0 1.1rem;">
-      <h1 id="vireo-title" style="margin:0; font-weight:800; font-size:2.6rem;">VIREO</h1>
-      <h3 style="margin:.3rem 0 0; font-weight:500; font-size:1rem; color:#29a329;">
-        Translate my thought
-      </h3>
-    </div>
-    """, unsafe_allow_html=True
-)
+# Load modern theme CSS from /assets (works when running inside /pages)
+css_path = Path(__file__).parent.parent / "assets" / "vireo_theme.css"
+if css_path.exists():
+    theme_css = css_path.read_text(encoding="utf-8")
+    st.markdown(f"<style>{theme_css}</style>", unsafe_allow_html=True)
+else:
+    st.warning("⚠️ Theme CSS not found at assets/vireo_theme.css")
 
 # -------------------------
-# Logo / Title
+# Single page header (no big VIREO brand here to avoid duplicates)
 # -------------------------
 st.markdown(
-    """
-    <div style="text-align:center; margin-bottom: 2rem;">
-        <h1 style="color:white; font-size: 3rem; font-weight: 800; margin:0;">VIREO</h1>
-        <h3 style="color:#29a329; font-size: 1.2rem; font-weight: 500; margin-top:0.5rem;">
-            Translate my thought
-        </h3>
-    </div>
-    """,
+    f"<h2 style='color:{VIREO_GREEN}; text-align:center; margin-top:.6rem;'>Translate My Thought</h2>",
     unsafe_allow_html=True
 )
 
@@ -245,7 +232,7 @@ if st.button("Translate"):
             try:
                 messages = build_messages(poetic_modes, selected_style, user_input)
                 resp = client.chat.completions.create(
-                    model="gpt-3.5-turbo",  # or "gpt-4o-mini" for slightly better tone at low cost
+                    model="gpt-3.5-turbo",  # or "gpt-4o-mini"
                     messages=messages,
                     temperature=0.8,
                     max_tokens=60
