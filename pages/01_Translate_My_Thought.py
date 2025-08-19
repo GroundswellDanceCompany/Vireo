@@ -8,7 +8,7 @@ from streamlit.components.v1 import html
 # Config
 # -------------------------
 VIREO_GREEN = "#29a329"
-PAGE_TITLE = "VIREO — Translate My Thought"
+PAGE_TITLE = "Translate My Thought"
 
 # -------------------------
 # Data
