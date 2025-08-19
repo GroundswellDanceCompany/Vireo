@@ -79,6 +79,10 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
+from pathlib import Path
+theme_css = Path("assets/vireo_theme.css").read_text(encoding="utf-8")
+st.markdown(f"<style>{theme_css}</style>", unsafe_allow_html=True)
+
 # -------------------------
 # Logo / Title
 # -------------------------
